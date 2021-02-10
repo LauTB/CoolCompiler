@@ -21,13 +21,13 @@ La inferencia de tipos de nuestro proyecto detecta para cada atributo, variable,
 
 #### 1.1 Algoritmo y Grafo de Dependecias
 
-**Entrada :** Un árbol de sintaxis abstracta, un contexto con todos los tipos declarados en el programa de COOL.
+**Entrada:** Un árbol de sintaxis abstracta, un contexto con todos los tipos declarados en el programa de COOL.
 
-**Salida :** Un árbol de Sintaxis Abstracta, Un Contexto y un Scope con tipos bien tagueados.
+**Salida:** Un árbol de Sintaxis Abstracta, Un Contexto y un Scope con tipos bien tagueados.
 
-**Algoritmo :** Durante el recorrido del AST será construido un grafo dirigido cuyos nodos encerrarán el concepto de las expresiones marcadas como `AUTO_TYPE` y las aristas representan las dependencias entre las expresiones de estos nodos para inferir su tipo. Sea `E1` una expresión cuyo tipo estático es marcado como `AUTO_TYPE`, y sea `E2` una expresión a partir de a cual se puede inferir el tipo de estático de `E1` entonces en el grafo existirá la arista `<E2, E1>`. Una vez construido el árbol se comenzará una cadena de expansión de tipos estáticos de la forma `E1, E2, ..., En` donde `Ej` se infiere de `Ei` con `1 < j = i + 1 <= n` y `E1` es una expresión con tipo estático definido, al cual llamaremos átomo. Cuando todos los átomos se hayan propagado a través del grafo los nodos que no hayan podido ser resueltos serán marcados como tipos `Object` al ser esta la clase mas general del lenguaje.
+**Algoritmo:** Durante el recorrido del AST será construido un grafo dirigido cuyos nodos encerrarán el concepto de las expresiones marcadas como `AUTO_TYPE` y las aristas representan las dependencias entre las expresiones de estos nodos para inferir su tipo. Sea `E1` una expresión cuyo tipo estático es marcado como `AUTO_TYPE`, y sea `E2` una expresión a partir de a cual se puede inferir el tipo de estático de `E1` entonces en el grafo existirá la arista `<E2, E1>`. Una vez construido el árbol se comenzará una cadena de expansión de tipos estáticos de la forma `E1, E2, ..., En` donde `Ej` se infiere de `Ei` con `1 < j = i + 1 <= n` y `E1` es una expresión con tipo estático definido, al cual llamaremos átomo. Cuando todos los átomos se hayan propagado a través del grafo los nodos que no hayan podido ser resueltos serán marcados como tipos `Object` al ser esta la clase mas general del lenguaje.
 
-**Implementación :** Para esto creamos una estructura llamada `DependencyGraph` donde podemos crear nodos como una estructura llamada `DependencyNode` y arcos entre ellos. La estructura `DependencyGraph` consiste en un `OrderedDict` de nodos contra lista de adyacencia. Esta lista de adyacencia contiene los nodos a los cuales la llave propagar su tipo, estos nodos de la lista tienen un orden y esto es fundamental para el algoritmo de solución de inferencia. Si tenemos un caso `{x: [y, z]}` donde `x`, `y`, `z` son nodos, entonces el algoritmo determinará el tipo de `y` y `z` antes de continuar con todas sus cadenas de expansión, por lo que si `z` forma parte de una cadena de expansión de `y` entonces `y` no propagará su tipo a `z` ya que `x` lo hizo antes. Como se puede ver el algoritmo es un BFS simple donde en la cola, al inicio, serán incluido los nodos del grafo que tengan su tipo definido, es decir que no sea `AUTO_TYPE`.
+**Implementación:** Para esto creamos una estructura llamada `DependencyGraph` donde podemos crear nodos como una estructura llamada `DependencyNode` y arcos entre ellos. La estructura `DependencyGraph` consiste en un `OrderedDict` de nodos contra lista de adyacencia. Esta lista de adyacencia contiene los nodos a los cuales la llave propagar su tipo, estos nodos de la lista tienen un orden y esto es fundamental para el algoritmo de solución de inferencia. Si tenemos un caso `{x: [y, z]}` donde `x`, `y`, `z` son nodos, entonces el algoritmo determinará el tipo de `y` y `z` antes de continuar con todas sus cadenas de expansión, por lo que si `z` forma parte de una cadena de expansión de `y` entonces `y` no propagará su tipo a `z` ya que `x` lo hizo antes. Como se puede ver el algoritmo es un BFS simple donde en la cola, al inicio, serán incluido los nodos del grafo que tengan su tipo definido, es decir que no sea `AUTO_TYPE`.
 
 #### 1.2 Nodos de Dependencia
 
@@ -268,7 +268,7 @@ class Main inherits IO {
 
 - Operaciones lógicas, las cuales influyen en sus operandos que sean `AUTO_TYPE`.
 
-- Llamdos a funciones con valor de retorno conocido.
+- Llamados a funciones con valor de retorno conocido.
 
 - Instancias de clases.
 
@@ -316,7 +316,7 @@ Para la cómoda utilizacion del intérprete hemos usado el paquete de python `ty
     run
     serialize
 
-Se se puede apreciar existen 3 comandos principales:
+Se puede apreciar existen 3 comandos principales:
 
 - `infer` el cual recibe un archivo .cl con un programa en COOL con tipos `AUTO_TYPE`  y devuelve un programa en COOL con todos los `AUTO_TYPE` reemplazados por sus tipos correspondientes.
 
